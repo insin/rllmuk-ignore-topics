@@ -12,11 +12,19 @@ Hover over a topic and a trash icon will appear; clicking it will hide the topic
 
 On the Unread Content page, a trash icon will also appear next to the forum a topic is in - clicking it will hide all topics in that forum when browsing Unread Content.
 
+![Screenshot of the trash icon appearing when hovering over a topic in Unread Content](screenshots/hover_topic.png)
+
 ## Unignoring
 
-If you've accidentally ignored the wrong thing, or if you decide you actually _do_ like _insert name of collectible physical object_ or _insert name of football club_ that much, open your browser's right-click/context menu and click "Show ignored topics" (this will be a top-level item in Firefox and under a "Rllmuk Ignore Topics" menu item in Chrome).
+If you've accidentally ignored the wrong thing, or if you realise you want to read about _insert name of collectible physical object_ or _insert name of football club_ more than you thought, open your browser's right-click/context menu and click "Show ignored topics" (this will be a top-level item in Firefox and under a "Rllmuk Ignore Topics" menu item in Chrome).
 
-Ignored topics will be displayed with a fetching salmon highlight and clicking the appropriate trash icon (you may have have ignored them individually, by forum or both) will unignore them. You can then re-hide them using the same menu item.
+| Firefox | Chrome |
+|:-------:|:------:|
+| ![Screenshot of the 'Show ignored topics' menu item in Firefox](screenshots/firefox_context_menu.png) | ![Screenshot of the 'Show ignored topics' menu item in Chrome](screenshots/chrome_context_menu.png) |
+
+Ignored topics will be displayed with a fetching salmon highlight and clicking the appropriate trash icon (you may have ignored a topic individually, by forum or both) will unignore them. You can then re-hide ignored topics using the same menu item.
+
+![Screenshot of ignored topics being shown in Unread Content](screenshots/showing_ignored_topics.png)
 
 ## Bonus Feature
 
