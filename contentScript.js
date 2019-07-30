@@ -54,7 +54,7 @@ function toggleIgnoreForum(id) {
   topics.forEach(topic => topic.updateClassNames())
 }
 
-function toggleshowIgnoredTopics(showIgnoredTopics) {
+function toggleShowIgnoredTopics(showIgnoredTopics) {
   config.showIgnoredTopics = showIgnoredTopics
   topics.forEach(topic => topic.updateClassNames())
 }
@@ -309,7 +309,7 @@ if (page) {
 
   chrome.storage.onChanged.addListener((changes) => {
     if ('showIgnoredTopics' in changes) {
-      toggleshowIgnoredTopics(changes['showIgnoredTopics'].newValue)
+      toggleShowIgnoredTopics(changes['showIgnoredTopics'].newValue)
     }
   })
 }
