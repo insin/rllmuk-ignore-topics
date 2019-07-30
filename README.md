@@ -2,8 +2,8 @@
 
 ![Rllmuk Logo](icons/icon128.png)
 
-* [Install Chrome Extension]()
-* [Install Firefox Add-on]()
+* [Install Chrome Extension](https://chrome.google.com/webstore/detail/llglldgehpbinpbpkegnhbhoiignllmf)
+* [Install Firefox Add-on](https://addons.mozilla.org/en-US/firefox/addon/rllmuk-ignore-topics/)
 * [Install as a user script](https://greasyfork.org/en/scripts/38321-rllmuk-topic-ignore-list-invision-4) (requires a [user script manager](https://greasyfork.org/en#home-step-1))
 
 ## Ignoring
