@@ -69,6 +69,8 @@ function UnreadContentPage() {
   const TOPIC_LINK_ID_RE = /index\.php\?\/topic\/(\d+)/
   const FORUM_LINK_ID_RE = /index\.php\?\/forum\/(\d+)/
 
+  let view
+
   addStyle(`
     .rit_ignoreControl {
       visibility: hidden;
@@ -103,6 +105,11 @@ function UnreadContentPage() {
     }
   `)
 
+  function getView() {
+    let $activeViewButton = document.querySelector('a.ipsButton_primary[data-action="switchView"]')
+    return $activeViewButton ? $activeViewButton.textContent.trim() : null
+  }
+
   function Topic($topic) {
     let $topicLink = $topic.querySelector('a[href*="index.php?/topic/"][data-linktype="link"]')
     let $forumLink = $topic.querySelector('a[href*="index.php?/forum/"]')
@@ -124,18 +131,29 @@ function UnreadContentPage() {
       }
     }
 
-    let $topicStats = $topic.querySelector('ul.ipsStreamItem_stats')
-    $topicStats.insertAdjacentHTML('beforeend', `
-      <li class="rit_ignoreControl rit_ignoreTopicControl">
-        <a style="cursor: pointer"><i class="fa fa-trash"></i></a>
-      </li>
-    `)
-    $topicStats.querySelector('i.fa-trash').addEventListener('click', () => {
+    let $ignoreTopicContainer
+    if (view == 'Condensed') {
+      $ignoreTopicContainer = $topic.querySelector('ul.ipsStreamItem_stats')
+      $ignoreTopicContainer.insertAdjacentHTML('beforeend', `
+        <li class="rit_ignoreControl rit_ignoreTopicControl">
+          <a style="cursor: pointer"><i class="fa fa-trash"></i></a>
+        </li>
+      `)
+    }
+    else {
+      $ignoreTopicContainer = $topicLink.parentNode
+      $ignoreTopicContainer.insertAdjacentHTML('beforeend', `
+        <a style="cursor: pointer"class="rit_ignoreControl rit_ignoreTopicControl">
+          <i class="fa fa-trash"></i>
+        </a>
+      `)
+    }
+    $ignoreTopicContainer.querySelector('i.fa-trash').addEventListener('click', () => {
       toggleIgnoreTopic(topicId, api)
     })
 
     $forumLink.parentNode.insertAdjacentHTML('beforeend', `
-        <a style="cursor: pointer" class="rit_ignoreControl rit_ignoreForumControl"><i class="fa fa-trash"></i></a>
+      <a style="cursor: pointer" class="rit_ignoreControl rit_ignoreForumControl"><i class="fa fa-trash"></i></a>
     `)
     $forumLink.parentNode.querySelector('i.fa-trash').addEventListener('click', () => {
       toggleIgnoreForum(forumId)
@@ -169,14 +187,26 @@ function UnreadContentPage() {
 
     new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        if (mutation.addedNodes[0].tagName === 'DIV') {
+        if (view != getView()) {
+          processView()
+        }
+        else if (mutation.addedNodes[0].tagName === 'DIV') {
           processTopicContainer(mutation.addedNodes[0])
         }
       })
     }).observe($el, {childList: true})
   }
 
-  processTopicContainer(document.querySelector('ol.ipsStream'))
+  /**
+   * Reset handling of topics when the view changes between Condensed and Expanded.
+   */
+  function processView() {
+    topics = []
+    view = getView()
+    processTopicContainer(document.querySelector('ol.ipsStream'))
+  }
+
+  processView()
 }
 
 function ForumPage() {
