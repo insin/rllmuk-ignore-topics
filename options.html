@@ -2,56 +2,22 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <style>
-      form {
-        font-size: 1.25em;
-      }
-      label.checkbox input {
-        margin-left:  0;
-        vertical-align: middle;
-      }
-      label.checkbox span {
-        vertical-align: middle;
-      }
-      section {
-        padding: .725em 0;
-      }
-      ul {
-        padding-left: 0;
-        margin-top: .5em;
-        margin-bottom: 0;
-      }
-      li {
-        list-style-type: none;
-      }
-      .rainbow {
-        background-image: repeating-linear-gradient(45deg, violet, indigo, blue, green, yellow, orange, red, violet);
-        text-align: center;
-        background-size: 800% 800%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: rainbow 2s ease infinite;
-      }
-      @keyframes rainbow {
-        0%{background-position:0% 50%}
-        50%{background-position:100% 25%}
-        100%{background-position:0% 50%}
-      }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rllmuk Ignore Topics Options</title>
+    <link rel="stylesheet" href="options.css">
   </head>
   <body>
     <form>
-      <section>
-        <label class="checkbox">
+      <section class="checkbox">
+        <label>
+          Show ignored topics
           <input type="checkbox" name="showIgnoredTopics">
-          <span>Show ignored topics</span>
         </label>
       </section>
-      <hr>
-      <section>
-        <label class="checkbox">
+      <section class="checkbox">
+        <label>
+          Make topic links go to the latest post
           <input type="checkbox" name="topicLinksLatestPost">
-          <span><strong class="rainbow">Bonus!</strong> Make topic links go to the latest post</span>
         </label>
       </section>
     </form>

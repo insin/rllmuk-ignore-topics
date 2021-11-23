@@ -1,0 +1,59 @@
+body, html {
+  padding: 0;
+  margin: 0;
+  font-family: Roboto, "Segoe UI", Tahoma, sans-serif;
+  font-size: 13px;
+}
+
+label {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 12px;
+  margin: 8px 0;
+  cursor: pointer;
+}
+
+input[type=checkbox] {
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+section:not(:first-of-type) {
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Firefox overrides */
+@-moz-document url-prefix() {
+  html {
+    height: 100%;
+  }
+  body {
+    font-family: inherit;
+    font-size: 15px;
+    height: 100%;
+  }
+  section:not(:first-of-type) {
+    border-color: #d7d7db;
+  }
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #292a2d;
+    color: #e8eaed;
+  }
+  section:not(:first-of-type) {
+    border-color: #3f4042;
+  }
+
+  /* Firefox dark mode overrides */
+  @-moz-document url-prefix() {
+    body {
+      background-color: #23222b;
+    }
+    section:not(:first-of-type) {
+      border-color: #4e4d54;
+    }
+  }
+}

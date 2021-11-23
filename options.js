@@ -1,31 +1,31 @@
 let form = document.querySelector('form')
 
-let config = {
+let optionsConfig = {
   showIgnoredTopics: false,
   topicLinksLatestPost: true,
 }
 
 chrome.storage.local.get((storedConfig) => {
-  Object.assign(config, storedConfig)
+  Object.assign(optionsConfig, storedConfig)
 
-  for (let prop in config) {
+  for (let prop in optionsConfig) {
     if (prop in form.elements) {
-      form.elements[prop].checked = config[prop]
+      form.elements[prop].checked = optionsConfig[prop]
     }
   }
 
   form.addEventListener('change', (e) => {
-    let {name, checked} = e.target
-    config[name] = checked
+    let {name, checked} = /** @type {HTMLInputElement} */ (e.target)
+    optionsConfig[name] = checked
     chrome.storage.local.set({[name]: checked})
   })
 })
 
 chrome.storage.onChanged.addListener((changes) => {
   for (let prop in changes) {
-    config[prop] = changes[prop].newValue
+    optionsConfig[prop] = changes[prop].newValue
     if (prop in form.elements) {
-      form.elements[prop].checked = config[prop]
+      form.elements[prop].checked = optionsConfig[prop]
     }
   }
 })

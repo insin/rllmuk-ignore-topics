@@ -1,13 +1,33 @@
+// ==UserScript==
+// @name        Rllmuk Ignore Topics
+// @description Hide topics you're not interested in
+// @namespace   https://github.com/insin/rllmuk-ignore-topics/
+// @version     13
+// @match       https://rllmukforum.com/index.php*
+// @match       https://www.rllmukforum.com/index.php*
+// @grant       GM.registerMenuCommand
+// ==/UserScript==
+
+/**
+ * @typedef {{updateClassNames(): void}} Topic
+ */
+
+/**
+ * @typedef {{id: string}} IgnoredItem
+ */
+
 const IGNORED_TOPICS_STORAGE = 'rit_ignoredTopics'
 const IGNORED_FORUMS_STORAGE = 'rit_ignoredForums'
 
+/** @type {Topic[]} */
 let topics = []
-
-let ignoredTopicsJson
+/** @type {IgnoredItem[]} */
 let ignoredTopics
+/** @type {string[]} */
 let ignoredTopicIds
-let ignoredForumsJson
+/** @type {IgnoredItem[]} */
 let ignoredForums
+/** @type {string[]} */
 let ignoredForumIds
 
 let config = {
@@ -18,14 +38,16 @@ let config = {
 // Support an initial load of config from til_ prefixes to support people moving
 // from the existing user script to the extension.
 function loadIgnoreConfig() {
-  ignoredTopicsJson = localStorage[IGNORED_TOPICS_STORAGE] || localStorage.til_ignoredTopics
-  ignoredTopics = ignoredTopicsJson ? JSON.parse(ignoredTopicsJson) : []
+  ignoredTopics = JSON.parse(localStorage[IGNORED_TOPICS_STORAGE] || '[]')
   ignoredTopicIds = ignoredTopics.map(topic => topic.id)
-  ignoredForumsJson = localStorage[IGNORED_FORUMS_STORAGE] || localStorage.til_ignoredForums
-  ignoredForums = ignoredForumsJson ? JSON.parse(ignoredForumsJson) : []
+  ignoredForums = JSON.parse(localStorage[IGNORED_FORUMS_STORAGE] || '[]')
   ignoredForumIds = ignoredForums.map(forum => forum.id)
 }
 
+/**
+ * @param {string} id
+ * @param {Topic} topic
+ */
 function toggleIgnoreTopic(id, topic) {
   if (!ignoredTopicIds.includes(id)) {
     ignoredTopicIds.unshift(id)
@@ -40,6 +62,9 @@ function toggleIgnoreTopic(id, topic) {
   topic.updateClassNames()
 }
 
+/**
+ * @param {string} id
+ */
 function toggleIgnoreForum(id) {
   if (!ignoredForumIds.includes(id)) {
     ignoredForumIds.unshift(id)
@@ -54,11 +79,17 @@ function toggleIgnoreForum(id) {
   topics.forEach(topic => topic.updateClassNames())
 }
 
+/**
+ * @param {boolean} showIgnoredTopics
+ */
 function toggleShowIgnoredTopics(showIgnoredTopics) {
   config.showIgnoredTopics = showIgnoredTopics
   topics.forEach(topic => topic.updateClassNames())
 }
 
+/**
+ * @param {string} css
+ */
 function addStyle(css) {
   let $style = document.createElement('style')
   $style.appendChild(document.createTextNode(css))
@@ -67,7 +98,7 @@ function addStyle(css) {
 
 function UnreadContentPage() {
   const TOPIC_LINK_ID_RE = /index\.php\?\/topic\/(\d+)/
-  const FORUM_LINK_ID_RE = /index\.php\?\/forum\/(\d+)/
+  const FORUM_LINK_ID_RE = /index\.php\?(?:\/forum\/|forumId=)(\d+)/
 
   let view
 
@@ -110,9 +141,13 @@ function UnreadContentPage() {
     return $activeViewButton ? $activeViewButton.textContent.trim() : null
   }
 
+  /**
+   * @param {HTMLElement} $topic
+   * @returns {Topic}
+   */
   function Topic($topic) {
-    let $topicLink = $topic.querySelector('a[href*="index.php?/topic/"][data-linktype="link"]')
-    let $forumLink = $topic.querySelector('a[href*="index.php?/forum/"]')
+    let $topicLink = /** @type {HTMLAnchorElement} */ ($topic.querySelector('a[href*="index.php?/topic/"][data-linktype="link"]'))
+    let $forumLink = /** @type {HTMLAnchorElement} */ ($topic.querySelector('a[href*="index.php?/forum/"], a[href*="index.php?forumId"]'))
     if (!$topicLink) {
       return null
     }
@@ -141,7 +176,7 @@ function UnreadContentPage() {
       `)
     }
     else {
-      $ignoreTopicContainer = $topicLink.parentNode
+      $ignoreTopicContainer = $topicLink.parentElement
       $ignoreTopicContainer.insertAdjacentHTML('beforeend', `
         <a style="cursor: pointer"class="rit_ignoreControl rit_ignoreTopicControl">
           <i class="fa fa-trash"></i>
@@ -152,10 +187,10 @@ function UnreadContentPage() {
       toggleIgnoreTopic(topicId, api)
     })
 
-    $forumLink.parentNode.insertAdjacentHTML('beforeend', `
+    $forumLink.parentElement.insertAdjacentHTML('beforeend', `
       <a style="cursor: pointer" class="rit_ignoreControl rit_ignoreForumControl"><i class="fa fa-trash"></i></a>
     `)
-    $forumLink.parentNode.querySelector('i.fa-trash').addEventListener('click', () => {
+    $forumLink.parentElement.querySelector('i.fa-trash').addEventListener('click', () => {
       toggleIgnoreForum(forumId)
     })
 
@@ -168,6 +203,7 @@ function UnreadContentPage() {
 
   /**
    * Add ignore controls to a topic and hide it if it's in the ignored list.
+   * @param {HTMLElement} $topic
    */
   function processTopic($topic) {
     let topic = Topic($topic)
@@ -181,6 +217,7 @@ function UnreadContentPage() {
   /**
    * Process topics within a topic container and watch for a new topic container being added.
    * When you click "Load more activity", a new <div> is added to the end of the topic container.
+   * @param {HTMLElement} $el
    */
   function processTopicContainer($el) {
     Array.from($el.querySelectorAll(':scope > li.ipsStreamItem'), processTopic)
@@ -190,7 +227,8 @@ function UnreadContentPage() {
         if (view != getView()) {
           processView()
         }
-        else if (mutation.addedNodes[0].tagName === 'DIV') {
+        else if (mutation.addedNodes[0] instanceof HTMLElement &&
+                 mutation.addedNodes[0].tagName === 'DIV') {
           processTopicContainer(mutation.addedNodes[0])
         }
       })
@@ -236,13 +274,17 @@ function ForumPage() {
     }
   `)
 
+  /**
+   * @param {HTMLElement} $topic
+   * @returns {Topic}
+   */
   function Topic($topic) {
     let topicId = $topic.dataset.rowid
     if (!topicId) {
       return null
     }
 
-    let $topicLink = $topic.querySelector('h4.ipsDataItem_title a')
+    let $topicLink = /** @type {HTMLAnchorElement} */ ($topic.querySelector('h4.ipsDataItem_title a'))
 
     let api = {
       updateClassNames() {
@@ -271,6 +313,7 @@ function ForumPage() {
 
   /**
    * Add ignore controls to a topic and hide it if it's in the ignored list.
+   * @param {HTMLElement} $topic
    */
   function processTopic($topic) {
     let topic = Topic($topic)
@@ -301,15 +344,24 @@ else if (location.href.includes('index.php?/forum/')) {
 }
 
 if (page) {
-  chrome.storage.local.get((storedConfig) => {
-    Object.assign(config, storedConfig)
+  if (typeof GM != 'undefined') {
     loadIgnoreConfig()
     page()
-  })
+    GM.registerMenuCommand('Toggle Ignored Topic Display', () => {
+      toggleShowIgnoredTopics(!config.showIgnoredTopics)
+    })
+  }
+  else {
+    chrome.storage.local.get((storedConfig) => {
+      Object.assign(config, storedConfig)
+      loadIgnoreConfig()
+      page()
+    })
 
-  chrome.storage.onChanged.addListener((changes) => {
-    if ('showIgnoredTopics' in changes) {
-      toggleShowIgnoredTopics(changes['showIgnoredTopics'].newValue)
-    }
-  })
+    chrome.storage.onChanged.addListener((changes) => {
+      if ('showIgnoredTopics' in changes) {
+        toggleShowIgnoredTopics(changes['showIgnoredTopics'].newValue)
+      }
+    })
+  }
 }
