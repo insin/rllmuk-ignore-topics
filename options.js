@@ -1,6 +1,8 @@
 let form = document.querySelector('form')
 
+/** @type {import("./types").Config} */
 let optionsConfig = {
+  hideFluidSidebar: false,
   showIgnoredTopics: false,
 }
 

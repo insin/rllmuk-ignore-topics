@@ -30,7 +30,9 @@ let ignoredForums
 /** @type {string[]} */
 let ignoredForumIds
 
+/** @type {import("./types").Config} */
 let config = {
+  hideFluidSidebar: false,
   showIgnoredTopics: false,
 }
 
@@ -249,6 +251,8 @@ function UnreadContentPage() {
 }
 
 function ForumPage() {
+  let isFluid = location.href.includes('index.php?forumId=')
+
   addStyle(`
     .rit_ignoreControl {
       display: table-cell;
@@ -257,6 +261,9 @@ function ForumPage() {
       visibility: hidden;
     }
     .rit_ignored {
+      display: none;
+    }
+    body.rit_hideFluidSidebar #ipsLayout_sidebar {
       display: none;
     }
     .rit_ignored.rit_show {
@@ -268,6 +275,9 @@ function ForumPage() {
         position: absolute;
         left: 12px;
         bottom: 16px;
+      }
+      .rit_toggleFluidToolItem {
+        display: none;
       }
     }
     li.ipsDataItem:hover .rit_ignoreControl {
@@ -284,8 +294,6 @@ function ForumPage() {
     if (!topicId) {
       return null
     }
-
-    let $topicLink = /** @type {HTMLAnchorElement} */ ($topic.querySelector('h4.ipsDataItem_title a'))
 
     let api = {
       updateClassNames() {
@@ -321,6 +329,45 @@ function ForumPage() {
     topic.updateClassNames()
   }
 
+  if (isFluid) {
+    let $toolList = document.querySelector('.ipsPageHeader .ipsToolList')
+    $toolList.insertAdjacentHTML('afterbegin', `
+      <li class="rit_toggleFluidToolItem">
+        <ul class="ipsButton_split">
+          <li>
+            <a class="rit_toggleFluidButton ipsButton ipsButton_narrow ipsButton_medium" href="#toggleFluidSidebar">
+              <i class="fa fa-chevron-down"></i>
+            </a>
+          </li>
+        </ul>
+      </li>
+    `)
+
+    let $toggleFluidControl = /** @type {HTMLAnchorElement} */ ($toolList.querySelector('.rit_toggleFluidButton'))
+    let $toggleFluidIcon = $toggleFluidControl.firstElementChild
+
+    function applyHideFluidSidebarConfig() {
+      document.body.classList.toggle('rit_hideFluidSidebar', config.hideFluidSidebar)
+      $toggleFluidIcon.classList.toggle('fa-chevron-down', !config.hideFluidSidebar)
+      $toggleFluidIcon.classList.toggle('fa-chevron-left', config.hideFluidSidebar)
+      $toggleFluidControl.title = `${config.hideFluidSidebar ? 'Show' : 'Hide'} sidebar`
+    }
+
+    $toggleFluidControl.addEventListener('click', (e) => {
+      e.preventDefault()
+      config.hideFluidSidebar = !config.hideFluidSidebar
+      applyHideFluidSidebarConfig()
+      if (typeof GM != 'undefined') {
+        localStorage.rit_config = JSON.stringify(config)
+      }
+      else {
+        chrome.storage.local.set({hideFluidSideBar: config.hideFluidSidebar})
+      }
+    })
+
+    applyHideFluidSidebarConfig()
+  }
+
   // Initial list of topics
   Array.from(document.querySelectorAll('ol.cTopicList > li.ipsDataItem[data-rowid]'), processTopic)
 
@@ -336,16 +383,18 @@ let page
 if (location.href.includes('index.php?/discover/unread')) {
   page = UnreadContentPage
 }
-else if (location.href.includes('index.php?/forum/')) {
+else if (location.href.includes('index.php?/forum/') || location.href.includes('index.php?forumId=')) {
   page = ForumPage
 }
 
 if (page) {
   if (typeof GM != 'undefined') {
+    Object.assign(config, JSON.parse(localStorage.rit_config || '{}'))
     loadIgnoreConfig()
     page()
     GM.registerMenuCommand('Toggle Ignored Topic Display', () => {
       toggleShowIgnoredTopics(!config.showIgnoredTopics)
+      localStorage.rit_config = JSON.stringify(config)
     })
   }
   else {

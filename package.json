@@ -12,7 +12,8 @@
       "jsconfig.json",
       "package.json",
       "README.md",
-      "screenshots/"
+      "screenshots/",
+      "types.d.ts"
     ]
   },
   "devDependencies": {
