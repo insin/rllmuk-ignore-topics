@@ -20,7 +20,7 @@
         "https://rllmukforum.com/*",
         "https://www.rllmukforum.com/*"
       ],
-      "js": ["./rllmukignoretopic.user.js"]
+      "js": ["./rllmukignoretopics.user.js"]
     }
   ],
   "options_ui": {

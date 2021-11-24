@@ -36,6 +36,13 @@ let config = {
   showIgnoredTopics: false,
 }
 
+function isFluidForumPage() {
+  return (
+    location.href.includes('index.php?forumId=') ||
+    (location.href.endsWith('index.php') && document.querySelector('a.ipsButton_primary[href*="setMethod&method=fluid"]') != null)
+  )
+}
+
 function loadIgnoreConfig() {
   ignoredTopics = JSON.parse(localStorage[IGNORED_TOPICS_STORAGE] || '[]')
   ignoredTopicIds = ignoredTopics.map(topic => topic.id)
@@ -136,9 +143,6 @@ function UnreadContentPage() {
     }
   `)
 
-  /**
-   * @returns {string}
-   */
   function getView() {
     let $activeViewButton = document.querySelector('a.ipsButton_primary[data-action="switchView"]')
     return $activeViewButton ? $activeViewButton.textContent.trim() : null
@@ -251,7 +255,7 @@ function UnreadContentPage() {
 }
 
 function ForumPage() {
-  let isFluid = location.href.includes('index.php?forumId=')
+  let isFluid = isFluidForumPage()
 
   addStyle(`
     .rit_ignoreControl {
@@ -273,8 +277,8 @@ function ForumPage() {
     @media screen and (max-width:979px) {
       .rit_ignoreControl {
         position: absolute;
-        left: 12px;
-        bottom: 16px;
+        ${isFluid ? 'right' : 'left'}: 12px;
+        ${isFluid ? 'top: 50%;' : 'bottom: 16px;'}
       }
       .rit_toggleFluidToolItem {
         display: none;
@@ -361,7 +365,7 @@ function ForumPage() {
         localStorage.rit_config = JSON.stringify(config)
       }
       else {
-        chrome.storage.local.set({hideFluidSideBar: config.hideFluidSidebar})
+        chrome.storage.local.set({hideFluidSidebar: config.hideFluidSidebar})
       }
     })
 
@@ -383,7 +387,7 @@ let page
 if (location.href.includes('index.php?/discover/unread')) {
   page = UnreadContentPage
 }
-else if (location.href.includes('index.php?/forum/') || location.href.includes('index.php?forumId=')) {
+else if (location.href.includes('index.php?/forum/') || isFluidForumPage()) {
   page = ForumPage
 }
 

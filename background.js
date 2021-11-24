@@ -13,7 +13,8 @@ chrome.storage.local.get((config) => {
     documentUrlPatterns: [
       'https://www.rllmukforum.com/index.php?/discover/unread/*',
       'https://www.rllmukforum.com/index.php?/forum/*',
-      'https://www.rllmukforum.com/index.php?/forumId=*',
+      'https://www.rllmukforum.com/index.php?forumId=*',
+      'https://www.rllmukforum.com/index.php',
     ],
   })
 
