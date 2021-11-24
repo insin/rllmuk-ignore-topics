@@ -2,7 +2,6 @@ let form = document.querySelector('form')
 
 let optionsConfig = {
   showIgnoredTopics: false,
-  topicLinksLatestPost: true,
 }
 
 chrome.storage.local.get((storedConfig) => {

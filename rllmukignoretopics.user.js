@@ -32,11 +32,8 @@ let ignoredForumIds
 
 let config = {
   showIgnoredTopics: false,
-  topicLinksLatestPost: true,
 }
 
-// Support an initial load of config from til_ prefixes to support people moving
-// from the existing user script to the extension.
 function loadIgnoreConfig() {
   ignoredTopics = JSON.parse(localStorage[IGNORED_TOPICS_STORAGE] || '[]')
   ignoredTopicIds = ignoredTopics.map(topic => topic.id)
@@ -100,6 +97,7 @@ function UnreadContentPage() {
   const TOPIC_LINK_ID_RE = /index\.php\?\/topic\/(\d+)/
   const FORUM_LINK_ID_RE = /index\.php\?(?:\/forum\/|forumId=)(\d+)/
 
+  /** @type {string} */
   let view
 
   addStyle(`
@@ -136,6 +134,9 @@ function UnreadContentPage() {
     }
   `)
 
+  /**
+   * @returns {string}
+   */
   function getView() {
     let $activeViewButton = document.querySelector('a.ipsButton_primary[data-action="switchView"]')
     return $activeViewButton ? $activeViewButton.textContent.trim() : null
@@ -303,10 +304,6 @@ function ForumPage() {
     $topic.querySelector('i.fa-trash').addEventListener('click', () => {
       toggleIgnoreTopic(topicId, api)
     })
-
-    if (config.topicLinksLatestPost && !$topicLink.href.endsWith('&do=getNewComment')) {
-      $topicLink.href += '&do=getNewComment'
-    }
 
     return api
   }
