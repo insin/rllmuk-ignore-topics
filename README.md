@@ -25,3 +25,11 @@ If you've accidentally ignored the wrong thing, or if you realise you want to re
 Ignored topics will be displayed with a fetching salmon highlight and clicking the appropriate trash icon (you may have ignored a topic individually, by forum or both) will unignore them. You can then re-hide ignored topics using the same menu item.
 
 ![Screenshot of ignored topics being shown in Unread Content](screenshots/showing_ignored_topics.png)
+
+## Bonus Feature: Hide Fluid Sidebar
+
+When using the forum's Fluid view, a collapse/expand button will also be added which allows you to hide the sidebar once you're done picking folders:
+
+| Expanded | Collapsed |
+|:--------:|:---------:|
+| ![Screenshot of the new collapse button in the Fluid view](screenshots/fluid_expanded.png) | ![Screenshot of the Fluid sidebar being hidden](screenshots/fluid_collapsed.png) |
