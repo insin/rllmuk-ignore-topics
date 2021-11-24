@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name        Rllmuk Ignore Topics
+// @name        Rllmuk Topic Ignore List (Invision 4)
 // @description Hide topics you're not interested in
-// @namespace   https://github.com/insin/rllmuk-ignore-topics/
+// @namespace   https://github.com/insin/greasemonkey/
 // @version     13
 // @match       https://rllmukforum.com/index.php*
 // @match       https://www.rllmukforum.com/index.php*
